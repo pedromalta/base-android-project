@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">App Name</string>
+
+    <string name="dialog_action_ok">OK</string>
+    <string name="dialog_loading">Carregando&#8230;</string>
+    <string name="dialog_action_cancel">Cancelar</string>
+    <string name="dialog_error_title">Desculpe</string>
+
+    <!-- Date Format -->
+    <string name="format_date">%1$td/%1$tm/%1$tY %1$tH:%1$tM</string>
+
+    <!-- Vehicle Format -->
+    <string name="format_vehicle">%1$s %2$s</string>
+
+    <!-- Title bars -->
+    <string name="title_bar_logout_menu">Logout</string>
+    <string name="title_bar_title_face">Identificação</string>
+
+    <!-- Note Fragment -->
+    <string name="edittext_notes">Relatório de aula:</string>
+    <string name="label_hint_initial_km">Km inicial</string>
+    <string name="label_hint_final_km">Km final</string>
+
+    <!-- Infractions Fragment -->
+    <string name="label_infractions">Infrações cometidas:</string>
+    <string name="dialog_title_add_infractions">Adicionar infrações</string>
+    <string name="dialog_message_add_infractions">Tem certeza que deseja adicionar a infrações: <br />\"<b>%1$s\"</b></string>
+
+
+    <!-- Login Activity -->
+    <string name="edittext_username">Usuário</string>
+    <string name="edittext_password">Senha</string>
+    <string name="button_login">Login</string>
+
+    <!-- Face Activity -->
+    <string name="dialog_error_message_no_camera">É necessario acesso a camera para iniciar o reconhecimento facial.</string>
+    <string name="dialog_error_message_no_face_detection">É a primeira vez que você utiliza a detecção facial, seu dispositivo está baixando uma biblioteca e isso pode demorar um pouco, volte em alguns minutos ou contacte um administrador.</string>
+    <string name="dialog_title_face">Reconhecimento facial</string>
+    <string name="dialog_message_face">Reconhecido com sucesso.</string>
+
+    <!-- Logout Dialog -->
+    <string name="dialog_title_logout">Logout</string>
+    <string name="dialog_message_logout">Tem certeza que deseja deslogar?</string>
+
+    <!-- Error Login -->
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="title_activity_maps">Map</string>
+
+    <string name="load_gpx_data_button_label">Load GPX mock data</string>
+    <string name="snap_to_roads_button_label">Send snap to roads request</string>
+    <string name="request_speeds_button_label">Request speed limits</string>
+
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:drawable="@drawable/bg_design"/>
+
+    <item
+        android:scaleType="centerCrop"
+        android:drawable="@drawable/ic_highlight_off_red_a700_18dp"/>
+
+</layer-list>
