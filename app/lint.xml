@@ -11,6 +11,6 @@
     <issue id="InvalidPackage" severity="ignore"/>               // Butterknife, Okio and Realm
     <issue id="ResourceType" severity="ignore"/>                 // Annotation binding
     <issue id="GradleDependency" severity="ignore"/>
-    <!--<issue id="NewerVersionAvailable" severity="ignore"/>-->
+    <issue id="NewerVersionAvailable" severity="ignore"/>
     <issue id="PropertyEscape" severity="ignore"/>                // CI issue with sdk.dir in local.properties
 </lint>

@@ -1,72 +1,99 @@
 apply plugin: 'com.android.application'
-apply from: '../config/quality/quality.gradle'
-apply from: '../config/jacoco.gradle'
-apply plugin: 'com.github.ben-manes.versions'
-//apply plugin: 'io.fabric'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'realm-android'
+apply plugin: 'kotlin-kapt'
+
+buildscript {
+    repositories {
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+}
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
 
-    dexOptions {
-        maxProcessCount 4
-        preDexLibraries false
-        javaMaxHeapSize "8g"
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    dataBinding {
-        enabled = true
-    }
-
+    compileSdkVersion 28
     defaultConfig {
-        defaultPublishConfig 'debug'
-
-        applicationId "br.com.drivin"
-        minSdkVersion 19
-        targetSdkVersion 27
-        testInstrumentationRunner "br.com.drivin.runner.RxAndroidJUnitRunner"
-        versionCode 1000
-        // Major -> Millions, Minor -> Thousands, Bugfix -> Hundreds. E.g 1.3.72 == 1,003,072
-        versionName '0.1.0'
-        multiDexEnabled true
-
+        applicationId "pedromalta.portinari.dev"
+        minSdkVersion 22
+        targetSdkVersion 28
+        versionCode 2
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath false
+            }
+        }
 
-        buildConfigField("String", "DRIVIN_API_URL", "\"${DrivinApiUrl}\"")
-        buildConfigField("String", "API_KEY", "\"${ApiKey}\"")
+        buildConfigField("String", "DRIVIN_API_URL", "\"${ApiUrlDev}\"")
+
     }
+
+    signingConfigs {
+        release {
+            storeFile file("/Users/rogerio/Desktop/key-drivin")
+            storePassword "123456"
+            keyAlias "key-drivin"
+            keyPassword "123456"
+        }
+    }
+
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField("String", "DRIVIN_API_URL", "\"${DrivinApiUrl}\"")
-            buildConfigField("String", "API_KEY", "\"${ApiKey}\"")
+            shrinkResources true
+            proguardFiles 'proguard-android.txt'
+            buildConfigField("String", "DRIVIN_API_URL", "\"${ApiUrl}\"")
+            resValue("bool", "HTTP_DEBUGGER", "false")
+            resValue("bool", "OVERLAY_DEBUGGER", "false")
+        }
+        debug {
+
         }
     }
 
-    sourceSets {
-        def commonTestDir = 'src/commonTest/java'
-        test {
-            java.srcDir commonTestDir
+    flavorDimensions 'tier'
+
+    productFlavors {
+        ext.app_version = "0.0.1"
+        development {
+            applicationId = "pedromalta.portinari.dev"
+            dimension "tier"
+            versionName "$app_version-dev"
+            resValue("bool", "HTTP_DEBUGGER", "true")
+            resValue("bool", "OVERLAY_DEBUGGER", "true")
+
         }
-        androidTest {
-            java.srcDir commonTestDir
+
+        production {
+            applicationId = "pedromalta.portinari"
+            dimension "tier"
+            versionName "$app_version"
+
+            resValue("bool", "HTTP_DEBUGGER", "false")
+            resValue("bool", "OVERLAY_DEBUGGER", "false")
         }
+
     }
+
 
     lintOptions {
-        disable 'CheckResult'
         textOutput "stdout"
         textReport true
         checkAllWarnings true
         warningsAsErrors true
         showAll true
         explainIssues true
-        abortOnError true
-        ignoreWarnings false
-        checkReleaseBuilds true
-        htmlReport true
-        xmlReport true
+        abortOnError false
         lintConfig file("$projectDir/lint.xml")
     }
 
@@ -77,66 +104,89 @@ android {
         exclude 'META-INF/NOTICE.txt'
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/rxjava.properties'
+        exclude 'META-INF/MANIFEST.MF'
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
 
-    testOptions {
-        animationsDisabled = true
-        unitTests {
-            includeAndroidResources = true
-            returnDefaultValues = true
-            all {
-                jacoco {
-                    includeNoLocationClasses true
-                }
-                systemProperty 'robolectric.logging.enabled', 'true'
-                systemProperty 'robolectric.logging', 'stdout'
-                // Print test details in the terminal (or CI).
-                testLogging {
-                    events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
-                    // Log out test results to console
-                    exceptionFormat 'full'
-                }
-            }
-        }
-    }
 }
 
 configurations.all {
     resolutionStrategy {
-        force 'com.squareup.okio:okio:1.11.0'
-        force "com.squareup.okhttp3:okhttp:3.5.0"
+        force 'com.squareup.okio:okio:1.14.1'
+        force 'com.squareup.okhttp3:okhttp:3.10.0'
+        force 'com.android.support:support-v7:26.1.0'
     }
 }
 
-
-apply from: 'dependencies.gradle'
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+    maven { url 'https://maven.google.com' }
+    mavenCentral()
+    maven { url 'https://maven.fabric.io/public' }
+}
 
 dependencies {
+    ext.anko_version = '0.10.4'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation group: 'org.joda', name: 'joda-convert', version: '2.0.1', classifier: 'classic'
+    implementation 'joda-time:joda-time:2.9.9'
 
-    implementation supportLibs
-    implementation googlePlayLibs
-    implementation networkLibs
-    implementation rxJavaLibs
-    implementation otherLibs
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:preference-v7:28.0.0'
+    implementation 'com.android.support:preference-v14:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:support-vector-drawable:28.0.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    implementation 'com.google.maps.android:android-maps-utils:0.3.4'
-    debugImplementation debugLibs
-    releaseImplementation releaseLibs
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
 
-    debugImplementation(sherlock) {
-        transitive = true
-    }
+    implementation 'com.github.vicpinm:krealmextensions:2.2.0'
 
-    // APT dependencies
-    annotationProcessor annotationProcessorLibs
-    testAnnotationProcessor daggerCompiler
-    androidTestAnnotationProcessor daggerCompiler
+    implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'android.arch.lifecycle:extensions:1.1.1'
+    kapt 'android.arch.lifecycle:compiler:1.1.1'
 
-    testImplementation unitTestLibs
-    androidTestImplementation androidTestsLibs
+    implementation 'com.jakewharton:butterknife:9.0.0-rc1'
+    kapt 'com.jakewharton:butterknife-compiler:9.0.0-rc1'
+    implementation 'com.tspoon.traceur:traceur:1.0.1'
+
+    debugImplementation 'com.readystatesoftware.chuck:library:1.1.0'
+    releaseImplementation 'com.readystatesoftware.chuck:library-no-op:1.1.0'
+
+    implementation "org.apache.commons:commons-lang3:3.7"
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
